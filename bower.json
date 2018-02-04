@@ -9,7 +9,7 @@
     "modal",
     "ajax"
   ],
-  "main": "./src/modal-remote.js", 
+  "main": "./dist/modal-remote.js", 
   "license": "MIT",
   "homepage": "http://carono.ru",
   "ignore": [
