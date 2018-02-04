@@ -20,16 +20,12 @@ function RemoteModal(modalId) {
         loadingTitle: "Loading"
     };
 
+    this.target = null;
     this.modal = $(modalId);
-
     this.dialog = $(modalId).find('.modal-dialog');
-
     this.header = $(modalId).find('.modal-header');
-
     this.content = $(modalId).find('.modal-body');
-
     this.footer = $(modalId).find('.modal-footer');
-
     this.loadingContent = '<div class="progress progress-striped active" style="margin-bottom:0;"><div class="progress-bar" style="width: 100%"></div></div>';
 
 
@@ -138,9 +134,10 @@ function RemoteModal(modalId) {
 
     /**
      * Add button to footer
-     * @param string label The label of button
-     * @param string classes The class of button
-     * @param callable callback the callback when button click
+     * @param label string label The label of button
+     * @param type string classes The class of button
+     * @param classes
+     * @param callback callable callback the callback when button click
      */
     this.addFooterButton = function (label, type, classes, callback) {
         var buttonElm = document.createElement('button');
@@ -157,7 +154,7 @@ function RemoteModal(modalId) {
     };
 
     /**
-     * Send ajax request and wraper response to modal
+     * Send ajax request and wrapper response to modal
      * @param {string} url The url of request
      * @param {string} method The method of request
      * @param {object}data of request
@@ -176,7 +173,6 @@ function RemoteModal(modalId) {
                 instance.errorRemoteResponse(response);
             },
             success: function (response, textStatus, jqXHR) {
-                console.log('success');
                 instance.successRemoteResponse(response, textStatus, jqXHR);
             },
             contentType: false,
@@ -216,26 +212,13 @@ function RemoteModal(modalId) {
      */
     this.successRemoteResponse = function (response, textStatus, jqXHR) {
         var ct = jqXHR.getResponseHeader("content-type") || "";
+        this.modal.trigger('remote.success', [this, response, jqXHR]);
+
         if (ct.indexOf('html') > -1) {
             this.setContent(response);
         }
         if (ct.indexOf('json') > -1) {
             // Reload datatable if response contain forceReload field
-            if (response.forceReload !== undefined && response.forceReload) {
-                if (response.forceReload == 'true') {
-                    // Backwards compatible reload of fixed crud-datatable-pjax
-                    $.pjax.reload({container: '#crud-datatable-pjax'});
-                } else {
-                    if ($.isArray(response.forceReload)) {
-                        for (x in response.forceReload) {
-                            $.pjax.reload({container: response.forceReload[x]});
-                        }
-                    }
-                    else {
-                        $.pjax.reload({container: response.forceReload});
-                    }
-                }
-            }
 
             if (response.forceExecute !== undefined && response.forceExecute) {
                 eval(response.forceExecute);
@@ -271,17 +254,21 @@ function RemoteModal(modalId) {
                 return;
             }
 
-            if (response.size !== undefined)
+            if (response.size !== undefined) {
                 this.setSize(response.size);
+            }
 
-            if (response.title !== undefined)
+            if (response.title !== undefined) {
                 this.setTitle(response.title);
+            }
 
-            if (response.content !== undefined)
+            if (response.content !== undefined) {
                 this.setContent(response.content);
+            }
 
-            if (response.footer !== undefined)
+            if (response.footer !== undefined) {
                 this.setFooter(response.footer);
+            }
         }
 
         if ($(this.content).find("form")[0] !== undefined) {
@@ -410,6 +397,7 @@ function RemoteModal(modalId) {
      * @params {elm}
      */
     this.open = function (elm, bulkData) {
+        this.target = elm;
         /**
          * Show either a local confirm modal or get modal content through ajax
          */
@@ -433,3 +421,9 @@ function RemoteModal(modalId) {
         }
     }
 }
+
+$(document).on('click', '[role="remote"]', function (event) {
+    event.preventDefault();
+    var remote = new RemoteModal($(this).data('target'));
+    remote.open(this, null);
+});
