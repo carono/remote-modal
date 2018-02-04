@@ -1,15 +1,14 @@
 {
-  "name": "modal-remote",
+  "name": "remote-modal",
   "authors": [
     "Aleksandr Kasyanov <info@carono.ru>"
   ],
   "description": "Ajax rendering content in modals",
-  "main": "modal-remote",
   "keywords": [
     "modal",
     "ajax"
   ],
-  "main": "./dist/modal-remote.js", 
+  "main": "./dist/remote-modal.js", 
   "license": "MIT",
   "homepage": "http://carono.ru",
   "ignore": [
