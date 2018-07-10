@@ -213,6 +213,7 @@ function RemoteModal(modalId) {
     this.successRemoteResponse = function (response, textStatus, jqXHR) {
         var ct = jqXHR.getResponseHeader("content-type") || "";
         this.modal.trigger('remote.success', [this, response, jqXHR]);
+        var instance = this;
 
         if (ct.indexOf('html') > -1) {
             this.setContent(response);
@@ -271,49 +272,21 @@ function RemoteModal(modalId) {
             }
         }
 
-        if ($(this.content).find("form")[0] !== undefined) {
-            var submit;
-            if ($(this.footer).find('[type="submit"]').length) {
-                submit = $(this.footer).find('[type="submit"]')[0];
+        this.modal.find('[type="submit"]').on('click', function (e) {
+            var data;
+            var form = $(this).closest('form');
+            if (window.FormData) {
+                data = new FormData(form[0]);
             } else {
-                submit = $(this.content).find('[type="submit"]')[0];
+                data = form.serializeArray();
             }
-            this.setupFormSubmit($(this.content).find("form")[0], submit);
-        }
-    };
-
-    /**
-     * Prepare submit button when modal has form
-     * @param {string} modalForm
-     * @param {object} modalFormSubmitBtn
-     */
-    this.setupFormSubmit = function (modalForm, modalFormSubmitBtn) {
-
-        if (modalFormSubmitBtn === undefined) {
-            // If submit button not found throw warning message
-            console.warn('Modal has form but does not have a submit button');
-        } else {
-            var instance = this;
-
-            // Submit form when user clicks submit button
-            $(modalFormSubmitBtn).click(function (e) {
-                var data;
-
-                // Test if browser supports FormData which handles uploads
-                if (window.FormData) {
-                    data = new FormData($(modalForm)[0]);
-                } else {
-                    // Fallback to serialize
-                    data = $(modalForm).serializeArray();
-                }
-                instance.doRemote(
-                    $(modalForm).attr('action'),
-                    $(modalForm).hasAttr('method') ? $(modalForm).attr('method') : 'GET',
-                    data
-                );
-                e.preventDefault();
-            });
-        }
+            instance.doRemote(
+                form.attr('action'),
+                form.hasAttr('method') ? form.attr('method') : 'GET',
+                data
+            );
+            e.preventDefault();
+        });
     };
 
     /**
