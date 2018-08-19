@@ -177,7 +177,7 @@ function RemoteModal(modalId) {
             },
             contentType: false,
             cache: false,
-            processData: false
+            processData: true
         });
     };
 
@@ -369,7 +369,7 @@ function RemoteModal(modalId) {
      *   - footer                (string/html footer of modal box)
      * @params {elm}
      */
-    this.open = function (elm, bulkData) {
+    this.open = function (elm) {
         this.target = elm;
         /**
          * Show either a local confirm modal or get modal content through ajax
@@ -383,13 +383,13 @@ function RemoteModal(modalId) {
                 $(elm).hasAttr('data-modal-size') ? $(elm).attr('data-modal-size') : 'normal',
                 $(elm).hasAttr('href') ? $(elm).attr('href') : $(elm).attr('data-url'),
                 $(elm).hasAttr('data-request-method') ? $(elm).attr('data-request-method') : 'GET',
-                bulkData
+                $(elm).data('params')
             )
         } else {
             this.doRemote(
                 $(elm).hasAttr('href') ? $(elm).attr('href') : $(elm).attr('data-url'),
                 $(elm).hasAttr('data-request-method') ? $(elm).attr('data-request-method') : 'GET',
-                bulkData
+                $(elm).data('params')
             );
         }
     }
@@ -397,6 +397,8 @@ function RemoteModal(modalId) {
 
 $(document).on('click', '[role="remote"]', function (event) {
     event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
     var remote = new RemoteModal($(this).data('target'));
-    remote.open(this, null);
+    remote.open(this);
 });
