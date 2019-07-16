@@ -177,7 +177,7 @@ function RemoteModal(modalId) {
             },
             contentType: false,
             cache: false,
-            processData: true
+            processData: false
         });
     };
 
