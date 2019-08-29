@@ -278,7 +278,7 @@ function RemoteModal(modalId) {
             if (window.FormData) {
                 data = new FormData(form[0]);
                 if ($(this).hasAttr('name')) {
-                    data.add($(this).attr('name'), '');
+                    data.append($(this).attr('name'), '');
                 }
             } else {
                 data = form.serializeArray();
