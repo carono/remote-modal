@@ -20,6 +20,8 @@ function RemoteModal(modalId) {
         loadingTitle: "Loading"
     };
 
+    this.contentType = false;
+    this.processData = null;
     this.target = null;
     this.modal = $(modalId);
     this.dialog = $(modalId).find('.modal-dialog');
@@ -175,9 +177,9 @@ function RemoteModal(modalId) {
             success: function (response, textStatus, jqXHR) {
                 instance.successRemoteResponse(response, textStatus, jqXHR);
             },
-            contentType: false,
+            contentType: this.contentType,
             cache: false,
-            processData: false
+            processData: this.processData === null && method === 'GET' ? true : this.processData
         });
     };
 
@@ -277,9 +279,6 @@ function RemoteModal(modalId) {
             var form = $(this).closest('form');
             if (window.FormData) {
                 data = new FormData(form[0]);
-                if ($(this).hasAttr('name')) {
-                    data.append($(this).attr('name'), '');
-                }
             } else {
                 data = form.serializeArray();
             }
