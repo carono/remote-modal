@@ -23,6 +23,7 @@ function RemoteModal(modalId) {
     this.contentType = false;
     this.processData = null;
     this.target = null;
+	this.xhrFields = {};
     this.modal = $(modalId);
     this.dialog = $(modalId).find('.modal-dialog');
     this.header = $(modalId).find('.modal-header');
@@ -178,6 +179,7 @@ function RemoteModal(modalId) {
                 instance.successRemoteResponse(response, textStatus, jqXHR);
             },
             contentType: this.contentType,
+			xhrFields: this.xhrFields,
             cache: false,
             processData: this.processData === null && method === 'GET' ? true : this.processData
         });
@@ -279,6 +281,9 @@ function RemoteModal(modalId) {
             var form = $(this).closest('form');
             if (window.FormData) {
                 data = new FormData(form[0]);
+                if ($(this).hasAttr('name')) {
+                    data.append($(this).attr('name'), '');
+                }
             } else {
                 data = form.serializeArray();
             }
