@@ -22,6 +22,7 @@ function RemoteModal(modalId) {
 
     this.contentType = false;
     this.processData = null;
+    this.async = true;
     this.target = null;
 	this.xhrFields = {};
     this.modal = $(modalId);
@@ -168,7 +169,7 @@ function RemoteModal(modalId) {
             url: url,
             method: method,
             data: data,
-            async: false,
+            async: this.async,
             beforeSend: function () {
                 instance.beforeRemoteRequest();
             },
@@ -179,7 +180,7 @@ function RemoteModal(modalId) {
                 instance.successRemoteResponse(response, textStatus, jqXHR);
             },
             contentType: this.contentType,
-			xhrFields: this.xhrFields,
+            xhrFields: this.xhrFields,
             cache: false,
             processData: this.processData === null && method === 'GET' ? true : this.processData
         });
@@ -221,6 +222,10 @@ function RemoteModal(modalId) {
 
         if (ct.indexOf('html') > -1) {
             this.setContent(response);
+            title = $(this.target).data('title')
+            if (title !== undefined) {
+                this.setTitle(title);
+            }
         }
         if (ct.indexOf('json') > -1) {
             // Reload datatable if response contain forceReload field
