@@ -24,14 +24,15 @@ function RemoteModal(modalId) {
     this.processData = null;
     this.async = true;
     this.target = null;
-	this.xhrFields = {};
+    this.xhrFields = {};
     this.modal = $(modalId);
     this.dialog = $(modalId).find('.modal-dialog');
     this.header = $(modalId).find('.modal-header');
     this.content = $(modalId).find('.modal-body');
     this.footer = $(modalId).find('.modal-footer');
     this.loadingContent = '<div class="progress progress-striped active" style="margin-bottom:0;"><div class="progress-bar" style="width: 100%"></div></div>';
-
+    this.redirectTitle;
+    this.redirectMessage;
 
     /**
      * Show the modal
@@ -202,8 +203,13 @@ function RemoteModal(modalId) {
      * @param {string} response
      */
     this.errorRemoteResponse = function (response) {
-        this.setTitle(response.status + response.statusText);
-        this.setContent(response.responseText);
+        if (response.status == 302 || response.status == 301) {
+            this.setTitle($(this.target).data('redirect-title') ? $(this.target).data('redirect-title') : this.redirectTitle);
+            this.setContent($(this.target).data('redirect-message') ? $(this.target).data('redirect-message') : this.redirectMessage);
+        } else {
+            this.setTitle(response.status + response.statusText);
+            this.setContent(response.responseText);
+        }
         this.addFooterButton('Close', 'button', 'btn btn-default', function (button, event) {
             this.hide();
         })
