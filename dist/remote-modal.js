@@ -94,6 +94,7 @@ function RemoteModal(modalId) {
      */
     this.setContent = function (content) {
         $(this.content).html(content);
+        $(modalId).trigger('remote.set-content');
     };
 
     /**
@@ -102,6 +103,7 @@ function RemoteModal(modalId) {
      */
     this.setFooter = function (content) {
         $(this.footer).html(content);
+        $(modalId).trigger('remote.set-footer');
     };
 
     /**
@@ -113,6 +115,7 @@ function RemoteModal(modalId) {
         $(this.header).find('h4.modal-title').remove();
         // add new title
         $(this.header).append('<h4 class="modal-title">' + title + '</h4>');
+        $(modalId).trigger('remote.set-title');
     };
 
     /**
@@ -222,6 +225,7 @@ function RemoteModal(modalId) {
      * @param jqXHR
      */
     this.successRemoteResponse = function (response, textStatus, jqXHR) {
+
         var ct = jqXHR.getResponseHeader("content-type") || "";
         this.modal.trigger('remote.success', [this, response, jqXHR]);
         var instance = this;
@@ -399,7 +403,7 @@ function RemoteModal(modalId) {
                 $(elm).attr('data-confirm-ok'),
                 $(elm).attr('data-confirm-cancel'),
                 $(elm).hasAttr('data-modal-size') ? $(elm).attr('data-modal-size') : 'normal',
-                $(elm).hasAttr('href') ? $(elm).attr('href') : $(elm).attr('data-url'),
+                $(elm).hasAttr('data-url') ? $(elm).data('url') : $(elm).attr('href'),
                 $(elm).hasAttr('data-request-method') ? $(elm).attr('data-request-method') : 'GET',
                 $(elm).data('params')
             )
@@ -417,6 +421,6 @@ $(document).on('click', '[role="remote"]', function (event) {
     event.preventDefault();
     event.stopPropagation();
     event.stopImmediatePropagation();
-    var remote = new RemoteModal($(this).data('target'));
+    var remote = new RemoteModal($(this).hasAttr('data-bs-target') ? $(this).data('bs-target') : $(this).data('target'));
     remote.open(this);
 });
