@@ -30,6 +30,8 @@ function RemoteModal(modalId) {
     this.header = $(modalId).find('.modal-header');
     this.content = $(modalId).find('.modal-body');
     this.footer = $(modalId).find('.modal-footer');
+    this.titleSelector = '.modal-title';
+
     this.loadingContent = '<div class="progress progress-striped active" style="margin-bottom:0;"><div class="progress-bar" style="width: 100%"></div></div>';
     this.redirectTitle;
     this.redirectMessage;
@@ -60,7 +62,7 @@ function RemoteModal(modalId) {
      * Clear modal
      */
     this.clear = function () {
-        $(this.modal).find('.modal-title').remove();
+        $(this.modal).find('.modal-title').html("");
         $(this.content).html("");
         $(this.footer).html("");
     };
@@ -111,10 +113,7 @@ function RemoteModal(modalId) {
      * @param {string} title The title of modal
      */
     this.setTitle = function (title) {
-        // remove old title
-        $(this.header).find('h4.modal-title').remove();
-        // add new title
-        $(this.header).append('<h4 class="modal-title">' + title + '</h4>');
+        $(this.header).find(this.titleSelector).text(title);
         $(modalId).trigger('remote.set-title');
     };
 
@@ -225,17 +224,14 @@ function RemoteModal(modalId) {
      * @param jqXHR
      */
     this.successRemoteResponse = function (response, textStatus, jqXHR) {
-
         var ct = jqXHR.getResponseHeader("content-type") || "";
         this.modal.trigger('remote.success', [this, response, jqXHR]);
         var instance = this;
 
         if (ct.indexOf('html') > -1) {
             this.setContent(response);
-            title = $(this.target).data('title')
-            if (title !== undefined) {
-                this.setTitle(title);
-            }
+            let title = $(this.target).data('title')
+            this.setTitle(title !== undefined ? title : '');
         }
         if (ct.indexOf('json') > -1) {
             // Reload datatable if response contain forceReload field
