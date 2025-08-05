@@ -405,7 +405,7 @@ function RemoteModal(modalId) {
             )
         } else {
             this.doRemote(
-                $(elm).hasAttr('href') ? $(elm).attr('href') : $(elm).attr('data-url'),
+                $(elm).hasAttr('data-url') ? $(elm).attr('data-url') : $(elm).attr('href'),
                 $(elm).hasAttr('data-request-method') ? $(elm).attr('data-request-method') : 'GET',
                 $(elm).data('params')
             );
